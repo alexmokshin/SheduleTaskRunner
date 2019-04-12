@@ -17,11 +17,17 @@ namespace TaskRunner
         public String[] E_mails { get; set; }
         #region Private variables
         private OracleCommand command = null;
-        private String Sql_File_Command { get; set; }
-        private String FilePath { get; set; }
+        private String Sql_File_Command;
+        private String FilePath;
+        private int resultCode;
+        private bool IsComplete = false;
         #endregion Private variables
 
-        
+        #region Constant variable
+        private const int TASK_ERROR_VALUE = -100;
+        #endregion Constant variable
+
+
 
         public SheduleTask(string Name, DateTime Start_time, string Sql_File_name, string Frequency_type, int Frequency, string[] emails)
         {
@@ -31,7 +37,7 @@ namespace TaskRunner
             this.Frequency_type = Frequency_type;
             this.Frequency = Frequency;
             this.E_mails = emails;
-            FilePath = GetPathSqlFile();
+            this.FilePath = GetPathSqlFile();
             if (File.Exists(FilePath))
             {
                 using (StreamReader reader = new StreamReader(GetPathSqlFile()))
@@ -51,9 +57,17 @@ namespace TaskRunner
             {
                 command = new OracleCommand(Sql_File_Command, connection);
             }
-            int resultCode = await command.ExecuteNonQueryAsync();
-
-            return resultCode;
+            try
+            {
+                resultCode = await command.ExecuteNonQueryAsync();
+                IsComplete = true;
+                return resultCode;
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine("{4} Error with Task: {0}\nError is {1}\n{2}", Name, ex.Message, ex.StackTrace, DateTime.Now);
+                return TASK_ERROR_VALUE;
+            }
         }
         
         private String GetPathSqlFile()
@@ -61,10 +75,11 @@ namespace TaskRunner
             string path = String.Empty;
             if (!String.IsNullOrEmpty(Sql_File_name))
             {
-                return $"Tasks/{Sql_File_name}";
+                path = $"Tasks/{Sql_File_name}";
+                return path;
             }
             else
-                throw new Exception("Имя файла не указано. Не удается найти путь");
+                return path;
                 
         }
 

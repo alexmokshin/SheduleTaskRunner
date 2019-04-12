@@ -2,6 +2,8 @@
 using System.Threading.Tasks;
 using System.IO;
 using System.Xml;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace TaskRunner
 {
@@ -9,43 +11,51 @@ namespace TaskRunner
     {
         static void Main(string[] args)
         {
+            List<SheduleTask> tasks = new List<SheduleTask>();
             XmlDocument xDoc = new XmlDocument();
-            xDoc.Load(@"resources\config_list.xml");
-            //xDoc.Load(@"resources\config_list.xml");
-            XmlElement xRoot = xDoc.DocumentElement;
-            foreach (XmlNode xnode in xRoot)
+            string xmlPath = @"Tasks\TaskSheduller.xml";
+            if (File.Exists(xmlPath))
             {
-                ApplicationServiceBase application = new ApplicationServiceBase();
-                if (xnode.Attributes.Count > 0)
+                xDoc.Load(xmlPath);
+                XmlElement xRoot = xDoc.DocumentElement;
+                foreach (XmlNode xnode in xRoot)
                 {
-                    XmlNode attr = xnode.Attributes.GetNamedItem("name");
-                    if (attr != null)
-                        application.Name = attr.Value;
+                    string name = string.Empty, sql_file_name = string.Empty, frequency_type = string.Empty;
+                    string[] emails = null;
+                    int frequency = 0;
+                    DateTime start_time = DateTime.Now;
+                    if (xnode.Attributes.Count > 0)
+                    {
+                        XmlNode attr = xnode.Attributes.GetNamedItem("name");
+                        if (attr != null)
+                            name = attr.Value;
+
+                    }
+                    foreach (XmlNode childnode in xnode.ChildNodes)
+                    {
+                        if (childnode.Name == "start_time")
+                            DateTime.TryParse(childnode.InnerText, out start_time);
+
+                        if (childnode.Name == "sql_file_name")
+                            sql_file_name = childnode.InnerText;
+
+                        if (childnode.Name == "frequency_type")
+                        {
+                            //TODO: Добавить проверку в шедъюл таск, на то, что фреквенси тайп может содержать только некоторые значения
+                            frequency_type = childnode.InnerText;
+                        }
+
+                        if (childnode.Name == "frequency_value")
+                            Int32.TryParse(childnode.InnerText, out frequency);
+
+                        if (childnode.Name == "e_mail")
+                            emails = childnode.InnerText.Split(',');
+
+                        SheduleTask sheduleTask = new SheduleTask(name, start_time, sql_file_name, frequency_type, frequency, emails);
+                        tasks.Add(sheduleTask);
+                    }
 
                 }
-                foreach (XmlNode childnode in xnode.ChildNodes)
-                {
-                    if (childnode.Name == "HostAppName")
-                        application.HostApplicationName = childnode.InnerText;
-
-                    if (childnode.Name == "HostAddress")
-                        application.HostAddress = childnode.InnerText;
-
-                    if (childnode.Name == "IsManipulate")
-                        application.IsManipulate = Convert.ToBoolean(childnode.InnerText);
-
-                    if (childnode.Name == "Username")
-                        application.Username = childnode.InnerText;
-
-                    if (childnode.Name == "Password")
-                        application.Password = childnode.InnerText;
-
-                    if (childnode.Name == "CommandPrefix")
-                        application.CommandPrefix = childnode.InnerText;
-                    if (childnode.Name == "OS")
-                        application.OS = childnode.InnerText;
-                }
-                
             }
 
             Console.WriteLine("Hello World!");
