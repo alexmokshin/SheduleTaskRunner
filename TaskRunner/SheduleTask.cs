@@ -7,7 +7,9 @@ using System.IO;
 
 namespace TaskRunner
 {
-    class SheduleTask
+    //ставлю sealed, чтобы никто не додумался от класса наследоваться. Данные выражения применимы только если ты хочешь выполнять SQL, уот так уот.
+    //может добавить базу...
+    sealed class SheduleTask
     {
         public String Name { get; set; }
         public DateTime Start_time { get; set; }

@@ -1,26 +1,26 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
-<root>
-  <tasks>
-    <task name="Select_from_Somesthing">
-      <start_time>12.04.2019 22:00:00</start_time>
-      <sql_file_name>selected.sql</sql_file_name>
-      <frequency_type>Day</frequency_type>
-      <frequency_value>1</frequency_value>
-      <e_mail>mokshin.alex@gmail.com</e_mail>
-    </task>
-    <task name="Delete_some_value">
-      <start_time>12.04.2019 22:15:00</start_time>
-      <sql_file_name>deleted.sql</sql_file_name>
-      <frequency_type>Month</frequency_type>
-      <frequency_value>1</frequency_value>
-      <e_mail>mokshin.alex@gmail.com</e_mail>
-    </task>
-    <task name="Insert some value">
-      <start_time>12.04.2019 22:20:00</start_time>
-      <sql_file_name>inserted.sql</sql_file_name>
-      <frequency_type>Hour</frequency_type>
-      <frequency_value>4</frequency_value>
-      <e_mail>mokshin.alex@gmail.com</e_mail>
-    </task>
-  </tasks>
-</root>
+
+<tasks>
+  <task name="Select_from_Somesthing">
+    <start_time>12.04.2019 22:00:00</start_time>
+    <sql_file_name>selected.sql</sql_file_name>
+    <frequency_type>Day</frequency_type>
+    <frequency_value>1</frequency_value>
+    <e_mail>mokshin.alex@gmail.com</e_mail>
+  </task>
+  <task name="Insert some value">
+    <start_time>12.04.2019 22:20:00</start_time>
+    <sql_file_name>inserted.sql</sql_file_name>
+    <frequency_type>Hour</frequency_type>
+    <frequency_value>4</frequency_value>
+    <e_mail>mokshin.alex@gmail.com</e_mail>
+  </task>
+  <task name="Delete_some_value">
+    <start_time>12.04.2019 22:15:00</start_time>
+    <sql_file_name>deleted.sql</sql_file_name>
+    <frequency_type>Month</frequency_type>
+    <frequency_value>1</frequency_value>
+    <e_mail>mokshin.alex@gmail.com</e_mail>
+  </task>
+</tasks>
+
