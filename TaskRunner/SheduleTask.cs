@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Text;
 using Oracle.ManagedDataAccess.Client;
 using System.IO;
+using System.Threading;
 
 namespace TaskRunner
 {
@@ -61,13 +62,17 @@ namespace TaskRunner
             }
             try
             {
+                connection.Open();
+                Console.WriteLine("{0} Начало выполнения задачи {1}", DateTime.Now, Name);
                 resultCode = await command.ExecuteNonQueryAsync();
                 IsComplete = true;
+                connection.Close();
+                Console.WriteLine("{0} Конец выполнения задачи {1}", DateTime.Now, Name, resultCode);
                 return resultCode;
             }
             catch(Exception ex)
             {
-                Console.WriteLine("{4} Error with Task: {0}\nError is {1}\n{2}", Name, ex.Message, ex.StackTrace, DateTime.Now);
+                Console.WriteLine("{0} Error with Task: {1}\nError is {2}\n{3}", DateTime.Now, Name, ex.Message, ex.StackTrace);
                 return TASK_ERROR_VALUE;
             }
         }

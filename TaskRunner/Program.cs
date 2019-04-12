@@ -8,7 +8,7 @@ namespace TaskRunner
 {
     class Program
     {
-        static void Main(string[] args)
+         static void Main(string[] args)
         {
             List<SheduleTask> tasks = new List<SheduleTask>();
             XmlDocument xDoc = new XmlDocument();
@@ -74,41 +74,40 @@ namespace TaskRunner
 
             if (tasks.Count > 0)
             {
-                DatabaseConnect databaseConnect = new DatabaseConnect();
-                var connection = databaseConnect.GetOracleConnection();
-                foreach(var task in tasks)
-                {
-                    if (task.Start_time < DateTime.Now)
+                
+                    DatabaseConnect databaseConnect = new DatabaseConnect();
+                    var connection = databaseConnect.GetOracleConnection();
+                    foreach (var task in tasks)
                     {
-                        try
+                        if (task.Start_time < DateTime.Now)
                         {
-                            connection.Open();
-                            //task.SheduleTaskRunner(connection).Wait();
-                            //Console.WriteLine("Task {0} is closed with result: {1}", task.Name, task.SheduleTaskRunner(connection));
-                            RunSheduleTask(task, connection);
-                            //Console.WriteLine(Task.Factory.StartNew(async s => await task.SheduleTaskRunner(connection),TaskCreationOptions.RunContinuationsAsynchronously));
-                            connection.Close();
-                        }
-                        catch (Exception ex)
-                        {
-                            Console.WriteLine(ex.Message);
-                        }
-                        finally
-                        {
-                            connection.Close();
+                            try
+                            {
+                                //connection.Open();
+                                RunSheduleTask(task, connection);
+                                //connection.Close();
+                            }
+                            catch (Exception ex)
+                            {
+                                Console.WriteLine(ex.Message);
+                            }
+                            finally
+                            {
+                                connection.Close();
+                            }
                         }
                     }
-                }
+                
             }
-
             Console.ReadKey();
+            
         }
 
         static async void RunSheduleTask(SheduleTask sheduleTask, Oracle.ManagedDataAccess.Client.OracleConnection connection)
         {
-            Console.WriteLine("{0} Начало выполнения задачи {1}",DateTime.Now, sheduleTask.Name);
+            
             await Task.Run(() => sheduleTask.SheduleTaskRunner(connection));
-            Console.WriteLine("{0} Конец выполнения задачи {1}", DateTime.Now, sheduleTask.Name);
+            
         }
     }
 }
