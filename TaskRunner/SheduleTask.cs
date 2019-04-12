@@ -19,6 +19,7 @@ namespace TaskRunner
         public int Frequency { get; set; }
         public String[] E_mails { get; set; }
         #region Private variables
+        private OracleConnection connection = null;
         private OracleCommand command = null;
         private String Sql_File_Command;
         private String FilePath;
@@ -50,33 +51,38 @@ namespace TaskRunner
             }
             else
                 throw new Exception("Файл не существует в директории Tasks");
-            
-            
+
+
         }
 
-        public async Task<int> SheduleTaskRunner(OracleConnection connection)
+        public async Task<int> SheduleTaskRunner()
         {
-            if (connection != null || !String.IsNullOrEmpty(Sql_File_Command))
-            {
-                command = new OracleCommand(Sql_File_Command, connection);
-            }
             try
             {
-                connection.Open();
-                Console.WriteLine("{0} Начало выполнения задачи {1}", DateTime.Now, Name);
-                resultCode = await command.ExecuteNonQueryAsync();
-                IsComplete = true;
-                connection.Close();
-                Console.WriteLine("{0} Конец выполнения задачи {1}", DateTime.Now, Name, resultCode);
-                return resultCode;
+                using (connection = new DatabaseConnect().GetOracleConnection())
+                {
+                    connection.Open();
+                    using (command = new OracleCommand(Sql_File_Command, connection))
+                    {
+
+                        Console.WriteLine("{0} Начало выполнения задачи {1}", DateTime.Now, Name);
+                        resultCode = await command.ExecuteNonQueryAsync();
+                        IsComplete = true;
+                        Console.WriteLine("{0} Конец выполнения задачи {1}", DateTime.Now, Name, resultCode);
+                        connection.Close();
+                        return resultCode;
+                    }
+                }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
+                connection.Close();
                 Console.WriteLine("{0} Error with Task: {1}\nError is {2}\n{3}", DateTime.Now, Name, ex.Message, ex.StackTrace);
                 return TASK_ERROR_VALUE;
             }
+
         }
-        
+
         private String GetPathSqlFile()
         {
             string path = String.Empty;
@@ -87,7 +93,7 @@ namespace TaskRunner
             }
             else
                 return path;
-                
+
         }
 
 

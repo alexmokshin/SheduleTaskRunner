@@ -75,25 +75,17 @@ namespace TaskRunner
             if (tasks.Count > 0)
             {
                 
-                    DatabaseConnect databaseConnect = new DatabaseConnect();
-                    var connection = databaseConnect.GetOracleConnection();
                     foreach (var task in tasks)
                     {
                         if (task.Start_time < DateTime.Now)
                         {
                             try
                             {
-                                //connection.Open();
-                                RunSheduleTask(task, connection);
-                                //connection.Close();
+                                RunSheduleTask(task);
                             }
                             catch (Exception ex)
                             {
                                 Console.WriteLine(ex.Message);
-                            }
-                            finally
-                            {
-                                connection.Close();
                             }
                         }
                     }
@@ -103,10 +95,10 @@ namespace TaskRunner
             
         }
 
-        static async void RunSheduleTask(SheduleTask sheduleTask, Oracle.ManagedDataAccess.Client.OracleConnection connection)
+        static async void RunSheduleTask(SheduleTask sheduleTask)
         {
             
-            await Task.Run(() => sheduleTask.SheduleTaskRunner(connection));
+            await Task.Run(() => sheduleTask.SheduleTaskRunner());
             
         }
     }
